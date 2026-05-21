@@ -1,0 +1,24 @@
+version: "3"
+services:
+  oj-backend:
+    entrypoint: []
+    volumes:
+      - /home/proach/OJ:/code
+    environment:
+      PYTHONPATH: /code:/app
+      JUDGE_SERVER_TOKEN: my-dev-token-2026   # 使用冒号语法确保覆盖
+    command: >
+      /bin/sh -c "rm -rf /app/account /app/announcement /app/conf /app/contest /app/judge /app/learning_stats /app/options /app/problem /app/spark_ai /app/submission /app/utils ; find /app -name '*.pyc' -delete ; find /app -type d -name '__pycache__' -exec rm -rf {} + ; python /code/manage.py runserver 0.0.0.0:8000"
+
+  oj-judge:
+    entrypoint: []
+    environment:
+      TOKEN: my-dev-token-2026   # 覆盖
+    command: >
+      sh -c ".venv/bin/gunicorn server:app --workers 4 --threads 2 --error-logfile /log/gunicorn.log --bind 0.0.0.0:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M

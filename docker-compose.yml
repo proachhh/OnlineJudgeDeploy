@@ -41,21 +41,41 @@ services:
       # - judger_debug=1
 
   oj-backend:
-    image: registry.cn-hongkong.aliyuncs.com/oj-image/backend:1.6.1
+    image: myoj4.0
     restart: always
     depends_on:
       - oj-redis
       - oj-postgres
       - oj-judge
+      - oj-neo4j
     volumes:
       - ./data/backend:/data
+      # 生产环境不挂载源码，直接使用镜像内代码
     environment:
       - POSTGRES_DB=onlinejudge
       - POSTGRES_USER=onlinejudge
       - POSTGRES_PASSWORD=onlinejudge
       - JUDGE_SERVER_TOKEN=CHANGE_THIS
+      - NEO4J_URL=bolt://oj-neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=48691412kid
       # - FORCE_HTTPS=1
       # - STATIC_CDN_HOST=cdn.oj.com
     ports:
-      - "0.0.0.0:80:8000"
-      - "0.0.0.0:443:1443"
+      - "0.0.0.0:8001:8000"
+      - "0.0.0.0:8443:1443"
+    command: ["python", "/app/manage.py", "runserver", "0.0.0.0:8000"]   # 使用镜像内代码
+
+  oj-neo4j:
+    image: neo4j:5.26.13-community
+    container_name: onlinejudgedeploy-oj-neo4j-1
+    restart: always
+    environment:
+      - NEO4J_AUTH=neo4j/48691412kid
+      - NEO4J_PLUGINS=["apoc", "graph-data-science"]
+    ports:
+      - "0.0.0.0:7474:7474"
+      - "0.0.0.0:7687:7687"
+    volumes:
+      - ./data/neo4j/data:/data
+      - ./data/neo4j/logs:/logs
