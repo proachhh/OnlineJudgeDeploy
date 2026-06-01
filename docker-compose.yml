@@ -41,7 +41,7 @@ services:
       # - judger_debug=1
 
   oj-backend:
-    image: myoj4.0
+    image: myoj:5.62
     restart: always
     depends_on:
       - oj-redis
@@ -50,6 +50,7 @@ services:
       - oj-neo4j
     volumes:
       - ./data/backend:/data
+      - ./data/chromadb:/data/chromadb
       # 生产环境不挂载源码，直接使用镜像内代码
     environment:
       - POSTGRES_DB=onlinejudge
@@ -59,6 +60,7 @@ services:
       - NEO4J_URL=bolt://oj-neo4j:7687
       - NEO4J_USER=neo4j
       - NEO4J_PASSWORD=48691412kid
+      - CHROMADB_DATA_DIR=/data/chromadb
       # - FORCE_HTTPS=1
       # - STATIC_CDN_HOST=cdn.oj.com
     ports:
