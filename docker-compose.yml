@@ -41,7 +41,7 @@ services:
       # - judger_debug=1
 
   oj-backend:
-    image: myoj:5.62
+    image: myoj:5.72
     restart: always
     depends_on:
       - oj-redis

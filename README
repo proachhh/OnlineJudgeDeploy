@@ -1,5 +1,0 @@
-##调试阶段需要启动 Dramatiq worker
-docker exec -it onlinejudgedeploy-oj-backend-1 python manage.py rundramatiq
-
-##安装 Neo4j 驱动
-docker exec -it onlinejudgedeploy-oj-backend-1 pip install neo4j-driver==5.28.1
